@@ -1,0 +1,201 @@
+﻿-- 1. AUTHORS --
+create table authors
+(
+    id int generated always as identity primary key,
+    first_name varchar(35) not null,
+    last_name varchar(37) not null,
+    age smallint
+);
+insert into authors(first_name, last_name, age)
+values
+('George', 'Orwell', 56),
+('Mixer', 'Shajhar', 44),
+('George', 'Thakur', 58),
+('Dato', 'Panjiashvili', 98),
+('Alexandr', 'Pushkin', 31),
+('Tolstoy', 'Lev', 57),
+('Alexandr', 'Dyuma', 26),
+('Xudoyberdi', 'To''xtaboyev', 54),
+('O''tkir', 'Hoshimov', 34);
+
+
+
+
+-- 2. PUBLISHERS --
+create table publishers
+(
+    id int generated always as identity primary key,
+    publisher_name varchar(35) not null
+);
+
+insert into publishers(publisher_name)
+values
+('Thomson Reuters'),
+('Penguin Random House'),
+('Hilol Nashiriyot'),
+('Macmillan Publishers'),
+('Scholastic');
+
+
+
+
+-- 3. BOOK_LANGUAGES --
+create table book_languages
+(
+    id int generated always as identity primary key,
+    language_code varchar(5) not null,
+    language varchar(50) not null
+);
+insert into book_languages(language_code, language)
+values
+('uz', 'Uzbek'),
+('es', 'Spanish'),
+('fr', 'French'),
+('de', 'German'),
+('en', 'English');
+
+
+
+
+-- 4. ORDER_STATUSES --
+create table order_statuses
+(
+    id int generated always as identity primary key,
+    status_value varchar(30) not null,
+    status_date date not null
+);
+insert into order_statuses(status_value, status_date)
+values
+('Active', '2022-04-22'),
+('Not Started', '2012-11-04'),
+('In Progress', '2018-07-23');
+
+
+
+
+-- 5. COUNTRIES --
+create table countries
+(
+    id int generated always as identity primary key,
+    country_name varchar(50) not null
+);
+insert into countries(country_name)
+values
+('Uzbekistan'),
+('Spain'),
+('France'),
+('Germany'),
+('UK');
+
+
+
+
+-- 6. ADDRESSES --
+create table addresses
+(
+    id int generated always as identity primary key,
+    street_number varchar(10) not null,
+    street_name varchar(50) not null,
+    city varchar(35) not null,
+    country_id int references countries(id)
+);
+insert into addresses(street_number, street_name, city, country_id)
+values
+('st. 21', 'Narimon Khojiboyev', 'Tashkent', 1),
+('st. 11', 'Buyuk Ipak Yo''li', 'Paris', 3),
+('st. 01', 'El-Primero', 'Santander', 2),
+('st. 06', 'Great Nikola', 'Frankfurt', 4),
+('st. 04', 'William Shakespare', 'Liverpool', 5);
+
+
+
+
+-- 7. CUSTOMERS --
+create table customers
+(
+    id int generated always as identity primary key,
+    first_name varchar(35) not null,
+    last_name varchar(37) not null,
+    phone_number varchar(13)
+        unique check(phone_number ~* '^[+998]{4}[0-9]{9}$'),
+    email varchar(50)
+        unique check(email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
+    password varchar(45) not null
+);
+insert into customers(first_name, last_name, phone_number, email, password)
+values
+('Sukhrob', 'Khayitmuradov', '+998944257242', 'sukhrob@gmail.com', 'sup@d1de3'),
+('Johon', 'Doyev', '+998975463211', 'doe@gmail.com', 'supah1gh@d1de3'),
+('Yosef', 'Abraham', '+998931243456', 'generalN1@gmail.com', 'gen3ra1#_'),
+('Qo''zivoy', 'To''ychiyeb', '+998977461020', 'qozi@gmail.com', 'sq0z#v*y3');
+
+
+
+
+-- 8. BOOKS --
+create table books
+(
+    id int generated always as identity primary key,
+    title_book varchar(50) not null,
+    publication_date date not null,
+    num_pages smallint not null,
+    isbn_book varchar not null,
+    genre varchar not null,
+    language_id int references book_languages(id),
+    publication_id int references publishers(id)
+);
+insert into books(title_book, publication_date, num_pages, isbn_book, genre, language_id, publication_id)
+values
+('1984', '2018-07-23', 340, 'ISBN 978-1-62676-007-3', 'Novel', 1, 3),
+('Sariq Devni Minib', '2010-12-23', 340, 'ISBN 978-1-62676-007-3', 'Fantasy', 3, 5),
+('K Chaadayevu', '2018-10-28', 340, 'ISBN 978-1-62676-007-3', 'Poem', 1, 4),
+('Yulduzli Tunlar', '2018-07-11', 340, 'ISBN 978-1-62676-007-3', 'Tragedy', 5, 1),
+('Dinim Islom', '2018-02-22', 340, 'ISBN 978-1-62676-007-3', 'Fantasy', 2, 2),
+('Finally Found You', '2018-11-23', 340, 'ISBN 978-1-62676-007-3', 'Sci-Fi', 4, 3),
+('13 Reasons Why', '2018-10-12', 340, 'ISBN 978-1-62676-007-3', 'Crime', 3, 2),
+('Atomic Habits', '2018-09-01', 340, 'ISBN 978-1-62676-007-3', '', 5, 5),
+('Ijtimoiy Odoblar', '2018-03-22', 340, 'ISBN 978-1-62676-007-3', 'Novel', 4, 4),
+('Ruhiy Tarbiya', '2018-05-17', 340, 'ISBN 978-1-62676-007-3', 'Novel', 2, 2);
+
+
+
+
+-- 9. BOOKS_AUTHORS --
+create table books_authors
+(
+    id int generated always as identity primary key,
+    book_id int references books(id),
+    author_id int references authors(id)
+);
+insert into books_authors(book_id, author_id)
+values
+(1, 1),
+(2, 9),
+(3, 5),
+(4, 6),
+(5, 7),
+(6, 2),
+(7, 3),
+(8, 4),
+(9, 8),
+(10, 1);
+
+
+
+
+-- 10. ORDERS --
+create table orders
+(
+    id int generated always as identity primary key,
+    order_date date not null,
+    price integer not null,
+    customer_id int references customers(id),
+    address_id int references addresses(id),
+    book_id int references books(id),
+    status_id int references order_statuses(id)
+);
+insert into orders(order_date, price, customer_id, address_id, book_id, status_id)
+values
+('2010-01-30', 12000, 1, 1, 7, 1),
+('2010-12-15', 55000, 3, 4, 1, 2),
+('2010-07-21', 24000, 4, 2, 3, 3);
